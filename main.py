@@ -22,7 +22,7 @@ def main():
         default="colored",
         help="Visualization method for alignment output",
     )
-    parser.add_argument("--output", type=str, help="Output file for alignment results")
+    parser.add_argument("--output", type=str, help="Output file for alignment results (JSON, CSV, TXT)")
 
     args = parser.parse_args()
 
