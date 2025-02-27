@@ -4,3 +4,4 @@ argparse
 pyyaml
 termcolor
 matplotlib
+pytest
