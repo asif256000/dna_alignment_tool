@@ -5,6 +5,7 @@ import pandas as pd
 from src.aligner import DNAAligner
 from src.config import CONFIG
 from src.io_handler import IOHandler
+from src.visualizer import Visualizer
 
 
 def main():
@@ -14,6 +15,12 @@ def main():
     parser.add_argument("--file", type=str, help="Input file (JSON, YAML, TXT)")
     parser.add_argument(
         "--method", choices=["smith-waterman", "needleman-wunsch"], default="smith-waterman", help="Alignment method"
+    )
+    parser.add_argument(
+        "--visualization",
+        choices=["colored", "ascii-heatmap", "matplotlib"],
+        default="colored",
+        help="Visualization method for alignment output",
     )
     parser.add_argument("--output", type=str, help="Output file for alignment results")
 
@@ -34,13 +41,22 @@ def main():
     # Perform alignment
     if args.method == "smith-waterman":
         score_matrix, max_score, max_pos = aligner.smith_waterman(seq1, seq2)
+        aligned_seq1, aligned_seq2 = aligner.traceback_smith_waterman(score_matrix, seq1, seq2)
         print("\nAlignment Score Matrix:\n", pd.DataFrame(score_matrix))
         print("\nMaximum Alignment Score:", max_score)
         print("Max Score Position:", max_pos)
     else:
         score_matrix = aligner.needleman_wunsch(seq1, seq2)
+        aligned_seq1, aligned_seq2 = aligner.traceback_needleman_wunsch(score_matrix, seq1, seq2)
         print("\nAlignment Score Matrix:\n", pd.DataFrame(score_matrix))
 
+    # Visualization
+    if args.visualization == "colored":
+        Visualizer.print_colored_alignment(aligned_seq1, aligned_seq2)
+    elif args.visualization == "ascii-heatmap":
+        Visualizer.print_ascii_heatmap(score_matrix)
+    elif args.visualization == "matplotlib":
+        Visualizer.plot_heatmap(score_matrix)
     # Save output if specified
     if args.output:
         IOHandler.write_to_file(args.output, score_matrix)
