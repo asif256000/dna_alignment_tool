@@ -52,3 +52,60 @@ class DNAAligner:
                 )
 
         return score_matrix
+
+    def traceback_smith_waterman(self, score_matrix, seq1, seq2):
+        """Traceback for Smith-Waterman to reconstruct aligned sequences."""
+        alignment_seq1, alignment_seq2 = "", ""
+
+        # Find the highest score position (starting point for traceback)
+        i, j = np.unravel_index(np.argmax(score_matrix), score_matrix.shape)
+
+        while i > 0 and j > 0 and score_matrix[i, j] > 0:
+            current_score = score_matrix[i, j]
+            diagonal = score_matrix[i - 1, j - 1] if i > 0 and j > 0 else 0
+            up = score_matrix[i - 1, j] if i > 0 else 0
+
+            if current_score == diagonal + (self.match if seq1[i - 1] == seq2[j - 1] else self.mismatch):
+                alignment_seq1 = seq1[i - 1] + alignment_seq1
+                alignment_seq2 = seq2[j - 1] + alignment_seq2
+                i -= 1
+                j -= 1
+            elif current_score == up + self.gap:
+                alignment_seq1 = seq1[i - 1] + alignment_seq1
+                alignment_seq2 = "-" + alignment_seq2
+                i -= 1
+            else:
+                alignment_seq1 = "-" + alignment_seq1
+                alignment_seq2 = seq2[j - 1] + alignment_seq2
+                j -= 1
+
+        return alignment_seq1, alignment_seq2
+
+    def traceback_needleman_wunsch(self, score_matrix, seq1, seq2):
+        """Reconstructs the aligned sequences using traceback for Needleman-Wunsch."""
+        i, j = len(seq1), len(seq2)
+        alignment_seq1, alignment_seq2 = "", ""
+
+        while i > 0 or j > 0:
+            if (
+                i > 0
+                and j > 0
+                and (
+                    score_matrix[i, j]
+                    == score_matrix[i - 1, j - 1] + (self.match if seq1[i - 1] == seq2[j - 1] else self.mismatch)
+                )
+            ):
+                alignment_seq1 = seq1[i - 1] + alignment_seq1
+                alignment_seq2 = seq2[j - 1] + alignment_seq2
+                i -= 1
+                j -= 1
+            elif i > 0 and (score_matrix[i, j] == score_matrix[i - 1, j] + self.gap):
+                alignment_seq1 = seq1[i - 1] + alignment_seq1
+                alignment_seq2 = "-" + alignment_seq2
+                i -= 1
+            else:
+                alignment_seq1 = "-" + alignment_seq1
+                alignment_seq2 = seq2[j - 1] + alignment_seq2
+                j -= 1
+
+        return alignment_seq1, alignment_seq2
