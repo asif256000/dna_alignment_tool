@@ -59,6 +59,13 @@ python main.py --seq1 "ACTG" --seq2 "ACTGG" --method needleman-wunsch
 python main.py --seq1 "ACTG" --seq2 "ACTGG" --output results.txt
 ```
 
+### Usage Examples
+
+<img width="388" height="388" alt="ss1" src="https://github.com/user-attachments/assets/2eb916bd-3560-40e9-b04c-5b0b08109ba6" />
+
+<img width="388" height="388" alt="ss2" src="https://github.com/user-attachments/assets/06c54fc7-615f-4ec9-96b2-4682e4b8dfed" />
+
+
 ## Future Enhancements 🚀
 
 - ⚡ Multi-threading for faster alignment
